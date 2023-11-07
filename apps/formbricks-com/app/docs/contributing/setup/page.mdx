@@ -1,4 +1,4 @@
-export const meta = {
+export const metadata = {
   title: "Formbricks Development Setup: Complete Guide to Local Environment Configuration for Dev",
   description:
     "Step-by-step guide to setting up your local development environment for Formbricks. Includes installing essential tools like Node.JS, pnpm, and Docker, and accessing the entire Formbricks stack including the Demo app and the main website",
@@ -89,6 +89,8 @@ To get the project running locally on your machine you need to have the followin
    - a `mailhog` container that acts as a mock SMTP server and shows received mails in a web UI (forwarded to your host's `localhost:8025`)
 
    **You can now access the Formbricks app on [http://localhost:3000](http://localhost:3000)**. You will be automatically redirected to the login. To use your local installation of formbricks, create a new account.
+
+   <Note>A fresh setup does not have a default account. Please create a new account and proceed accordingly.</Note>
 
    For viewing the confirmation email and other emails the system sends you, you can access mailhog at [http://localhost:8025](http://localhost:8025)
 
