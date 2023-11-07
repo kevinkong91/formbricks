@@ -35,10 +35,10 @@ x-environment: &environment
     # SHORT_URL_BASE:
 
     # Set the below to 0 to enable Email Verification for new signups (will required Email Configuration)
-    EMAIL_VERIFICATION_DISABLED: 1
+    EMAIL_VERIFICATION_DISABLED: 0
 
     # Set the below to 0 to enable Password Reset (will required Email Configuration)
-    PASSWORD_RESET_DISABLED: 1
+    PASSWORD_RESET_DISABLED: 0
 
     # Uncomment the below and set it to 1 to disable Signups
     # SIGNUP_DISABLED:
@@ -50,7 +50,7 @@ x-environment: &environment
     # PRIVACY_URL:
 
     # Uncomment the below and set a value to have your own Terms Page URL on the auth and the surveys page
-    # TERMS_URL:
+    TERMS_URL: "https://app.termly.io/dashboard/website/ad0f33e3-a2f1-46f4-b933-b878577b9b87/terms-of-service"
 
     # Uncomment the below and set a value to have your own Imprint Page URL on the auth and the surveys page
     # IMPRINT_URL:
@@ -78,7 +78,7 @@ services:
 
   formbricks:
     restart: always
-    image: formbricks/formbricks:latest
+    image: kevinkong91/pulsehero:latest
     depends_on:
       - postgres
     ports:
