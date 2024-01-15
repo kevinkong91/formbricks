@@ -1,12 +1,13 @@
 import MemberActions from "@/app/(app)/environments/[environmentId]/settings/members/components/EditMemberships/MemberActions";
-import { EditMembershipRole } from "@formbricks/ee/RoleManagement/components/EditMembershipRole";
 import { isInviteExpired } from "@/app/lib/utils";
+import React from "react";
+
+import { EditMembershipRole } from "@formbricks/ee/RoleManagement/components/EditMembershipRole";
 import { TInvite } from "@formbricks/types/invites";
 import { TMember, TMembershipRole } from "@formbricks/types/memberships";
 import { TTeam } from "@formbricks/types/teams";
-import { Badge } from "@formbricks/ui/Badge";
 import { ProfileAvatar } from "@formbricks/ui/Avatars";
-import React from "react";
+import { Badge } from "@formbricks/ui/Badge";
 
 type MembersInfoProps = {
   team: TTeam;
@@ -15,7 +16,7 @@ type MembersInfoProps = {
   isUserAdminOrOwner: boolean;
   currentUserId: string;
   currentUserRole: TMembershipRole;
-  isEnterpriseEdition: boolean;
+  canDoRoleManagement: boolean;
 };
 
 // Type guard to check if member is an invitee
@@ -30,15 +31,15 @@ const MembersInfo = async ({
   members,
   currentUserId,
   currentUserRole,
-  isEnterpriseEdition,
+  canDoRoleManagement,
 }: MembersInfoProps) => {
   const allMembers = [...members, ...invites];
 
   return (
-    <div className="grid-cols-20">
+    <div className="grid-cols-20" id="membersInfoWrapper">
       {allMembers.map((member) => (
         <div
-          className="grid-cols-20 grid h-auto w-full content-center rounded-lg p-0.5 py-2 text-left text-sm text-slate-900"
+          className="singleMemberInfo grid-cols-20 grid h-auto w-full content-center rounded-lg p-0.5 py-2 text-left text-sm text-slate-900"
           key={member.email}>
           <div className="h-58 col-span-2 pl-4">
             {isInvitee(member) ? (
@@ -55,7 +56,7 @@ const MembersInfo = async ({
           </div>
 
           <div className="ph-no-capture col-span-3 flex flex-col items-start justify-center break-all">
-            {isEnterpriseEdition && allMembers?.length > 0 && (
+            {canDoRoleManagement && allMembers?.length > 0 && (
               <EditMembershipRole
                 isAdminOrOwner={isUserAdminOrOwner}
                 memberRole={member.role}

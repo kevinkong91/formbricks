@@ -1,12 +1,12 @@
 "use client";
 
+import { remToPx } from "@/lib/remToPx";
 import clsx from "clsx";
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
 
-import { remToPx } from "@/lib/remToPx";
 import { Button } from "./Button";
 import { useIsInsideMobileNavigation } from "./MobileNavigation";
 import { useSectionStore } from "./SectionProvider";
@@ -193,6 +193,7 @@ export const navigation: Array<NavGroup> = [
     links: [
       { title: "Quickstart: In app", href: "/docs/getting-started/quickstart-in-app-survey" },
       { title: "Framework Guides", href: "/docs/getting-started/framework-guides" },
+      { title: "Troubleshooting", href: "/docs/getting-started/troubleshooting" },
     ],
   },
   {
@@ -212,6 +213,15 @@ export const navigation: Array<NavGroup> = [
     ],
   },
   {
+    title: "Link Surveys",
+    links: [
+      { title: "Data Prefilling", href: "/docs/link-surveys/data-prefilling" },
+      { title: "Identify Users", href: "/docs/link-surveys/user-identification" },
+      { title: "Single Use Links", href: "/docs/link-surveys/single-use-links" },
+      { title: "Source Tracking", href: "/docs/link-surveys/source-tracking" },
+    ],
+  },
+  {
     title: "Best Practices",
     links: [
       { title: "Learn from Churn", href: "/docs/best-practices/cancel-subscription" },
@@ -228,25 +238,20 @@ export const navigation: Array<NavGroup> = [
     links: [
       { title: "Airtable", href: "/docs/integrations/airtable" },
       { title: "Google Sheets", href: "/docs/integrations/google-sheets" },
+      { title: "Notion", href: "/docs/integrations/notion" },
       { title: "Make.com", href: "/docs/integrations/make" },
       { title: "n8n", href: "/docs/integrations/n8n" },
+      { title: "Wordpress", href: "/docs/integrations/wordpress" },
       { title: "Zapier", href: "/docs/integrations/zapier" },
-    ],
-  },
-  {
-    title: "Link Surveys",
-    links: [
-      { title: "Data Prefilling", href: "/docs/link-surveys/data-prefilling" },
-      { title: "User Identification", href: "/docs/link-surveys/user-identification" },
-      { title: "Single Use Links", href: "/docs/link-surveys/single-use-links" },
     ],
   },
   {
     title: "Self-hosting",
     links: [
-      { title: "Deployment", href: "/docs/self-hosting/deployment" },
-      { title: "Production", href: "/docs/self-hosting/production" },
-      { title: "Docker", href: "/docs/self-hosting/docker" },
+      { title: "Introduction", href: "/docs/self-hosting/deployment" },
+      { title: "One-Click Setup", href: "/docs/self-hosting/production" },
+      { title: "Advanced Setup", href: "/docs/self-hosting/docker" },
+      { title: "Configure", href: "/docs/self-hosting/external-auth-providers" },
       { title: "Migration Guide", href: "/docs/self-hosting/migration-guide" },
     ],
   },
@@ -256,7 +261,6 @@ export const navigation: Array<NavGroup> = [
       { title: "Introduction", href: "/docs/contributing/introduction" },
       { title: "Demo App", href: "/docs/contributing/demo" },
       { title: "Setup Dev Environment", href: "/docs/contributing/setup" },
-      { title: "Gitpod", href: "/docs/contributing/gitpod" },
       { title: "How we code at Formbricks", href: "/docs/contributing/how-we-code" },
       { title: "How to create a service", href: "/docs/contributing/creating-a-service" },
       { title: "Troubleshooting", href: "/docs/contributing/troubleshooting" },
@@ -267,7 +271,9 @@ export const navigation: Array<NavGroup> = [
     title: "Client API",
     links: [
       { title: "Overview", href: "/docs/api/client/overview" },
+      { title: "Actions", href: "/docs/api/client/actions" },
       { title: "Displays", href: "/docs/api/client/displays" },
+      { title: "People", href: "/docs/api/client/people" },
       { title: "Responses", href: "/docs/api/client/responses" },
     ],
   },

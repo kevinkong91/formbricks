@@ -1,22 +1,25 @@
 import {
-  S3Client,
-  GetObjectCommand,
   DeleteObjectCommand,
-  ListObjectsCommand,
   DeleteObjectsCommand,
+  GetObjectCommand,
+  ListObjectsCommand,
+  S3Client,
 } from "@aws-sdk/client-s3";
+import { PresignedPostOptions, createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { createPresignedPost, PresignedPostOptions } from "@aws-sdk/s3-presigned-post";
-import { access, mkdir, writeFile, readFile, unlink, rmdir } from "fs/promises";
-import { join } from "path";
+import { randomUUID } from "crypto";
+import { access, mkdir, readFile, rmdir, unlink, writeFile } from "fs/promises";
 import mime from "mime";
-import { env } from "@/env.mjs";
-import { IS_S3_CONFIGURED, LOCAL_UPLOAD_URL, MAX_SIZES, UPLOADS_DIR, WEBAPP_URL } from "../constants";
 import { unstable_cache } from "next/cache";
-import { storageCache } from "./cache";
-import { TAccessType } from "@formbricks/types/storage";
-import { generateLocalSignedUrl } from "../crypto";
+import { join } from "path";
 import path from "path";
+
+import { TAccessType } from "@formbricks/types/storage";
+
+import { IS_S3_CONFIGURED, MAX_SIZES, UPLOADS_DIR, WEBAPP_URL } from "../constants";
+import { generateLocalSignedUrl } from "../crypto";
+import { env } from "../env.mjs";
+import { storageCache } from "./cache";
 
 // global variables
 
@@ -59,6 +62,7 @@ type TGetSignedUrlResponse =
   | { signedUrl: string; fileUrl: string; presignedFields: Object }
   | {
       signedUrl: string;
+      updatedFileName: string;
       fileUrl: string;
       signingData: {
         signature: string;
@@ -169,19 +173,34 @@ export const getUploadSignedUrl = async (
   accessType: TAccessType,
   plan: "free" | "pro" = "free"
 ): Promise<TGetSignedUrlResponse> => {
+  // add a unique id to the file name
+
+  const fileExtension = fileName.split(".").pop();
+  const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
+
+  if (!fileExtension) {
+    throw new Error("File extension not found");
+  }
+
+  const updatedFileName = `${fileNameWithoutExtension}--fid--${randomUUID()}.${fileExtension}`;
+
   // handle the local storage case first
   if (!IS_S3_CONFIGURED) {
     try {
-      const { signature, timestamp, uuid } = generateLocalSignedUrl(fileName, environmentId, fileType);
+      const { signature, timestamp, uuid } = generateLocalSignedUrl(updatedFileName, environmentId, fileType);
 
       return {
-        signedUrl: LOCAL_UPLOAD_URL[accessType],
+        signedUrl:
+          accessType === "private"
+            ? new URL(`${WEBAPP_URL}/api/v1/client/${environmentId}/storage/local`).href
+            : new URL(`${WEBAPP_URL}/api/v1/management/storage/local`).href,
         signingData: {
           signature,
           timestamp,
           uuid,
         },
-        fileUrl: new URL(`${WEBAPP_URL}/storage/${environmentId}/${accessType}/${fileName}`).href,
+        updatedFileName,
+        fileUrl: new URL(`${WEBAPP_URL}/storage/${environmentId}/${accessType}/${updatedFileName}`).href,
       };
     } catch (err) {
       throw err;
@@ -190,7 +209,7 @@ export const getUploadSignedUrl = async (
 
   try {
     const { presignedFields, signedUrl } = await getS3UploadSignedUrl(
-      fileName,
+      updatedFileName,
       fileType,
       accessType,
       environmentId,
@@ -201,7 +220,7 @@ export const getUploadSignedUrl = async (
     return {
       signedUrl,
       presignedFields,
-      fileUrl: new URL(`${WEBAPP_URL}/storage/${environmentId}/${accessType}/${fileName}`).href,
+      fileUrl: new URL(`${WEBAPP_URL}/storage/${environmentId}/${accessType}/${updatedFileName}`).href,
     };
   } catch (err) {
     throw err;

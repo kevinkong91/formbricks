@@ -1,6 +1,42 @@
 "use client";
 
 import FaveIcon from "@/app/favicon.ico";
+import { formbricksLogout } from "@/app/lib/formbricks";
+import {
+  AdjustmentsVerticalIcon,
+  ArrowRightOnRectangleIcon,
+  ChatBubbleBottomCenterTextIcon,
+  ChevronDownIcon,
+  CodeBracketIcon,
+  CreditCardIcon,
+  DocumentCheckIcon,
+  EnvelopeIcon,
+  HeartIcon,
+  LinkIcon,
+  PaintBrushIcon,
+  PlusIcon,
+  UserCircleIcon,
+  UsersIcon,
+} from "@heroicons/react/24/solid";
+import clsx from "clsx";
+import { MenuIcon } from "lucide-react";
+import type { Session } from "next-auth";
+import { signOut } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+
+import formbricks from "@formbricks/js";
+import { cn } from "@formbricks/lib/cn";
+import { getAccessFlags } from "@formbricks/lib/membership/utils";
+import { capitalizeFirstLetter, truncate } from "@formbricks/lib/strings";
+import { TEnvironment } from "@formbricks/types/environment";
+import { TMembershipRole } from "@formbricks/types/memberships";
+import { TProduct } from "@formbricks/types/product";
+import { TTeam } from "@formbricks/types/teams";
+import { ProfileAvatar } from "@formbricks/ui/Avatars";
+import CreateTeamModal from "@formbricks/ui/CreateTeamModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,45 +52,12 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@formbricks/ui/DropdownMenu";
-import CreateTeamModal from "@formbricks/ui/CreateTeamModal";
-import UrlShortenerModal from "./UrlShortenerModal";
-import { formbricksLogout } from "@/app/lib/formbricks";
-import { capitalizeFirstLetter, truncate } from "@formbricks/lib/strings";
-import formbricks from "@formbricks/js";
-import { cn } from "@formbricks/lib/cn";
-import { TEnvironment } from "@formbricks/types/environment";
-import { TProduct } from "@formbricks/types/product";
-import { TTeam } from "@formbricks/types/teams";
-import { CustomersIcon, DashboardIcon, FilterIcon, FormIcon, SettingsIcon } from "@formbricks/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@formbricks/ui/Popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@formbricks/ui/Tooltip";
-import { ProfileAvatar } from "@formbricks/ui/Avatars";
-import {
-  AdjustmentsVerticalIcon,
-  ArrowRightOnRectangleIcon,
-  ChatBubbleBottomCenterTextIcon,
-  ChevronDownIcon,
-  CodeBracketIcon,
-  CreditCardIcon,
-  DocumentCheckIcon,
-  HeartIcon,
-  PaintBrushIcon,
-  PlusIcon,
-  UserCircleIcon,
-  UsersIcon,
-  LinkIcon,
-} from "@heroicons/react/24/solid";
-import clsx from "clsx";
-import { MenuIcon } from "lucide-react";
-import type { Session } from "next-auth";
-import { signOut } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { CustomersIcon, DashboardIcon, FilterIcon, FormIcon, SettingsIcon } from "@formbricks/ui/icons";
+
 import AddProductModal from "./AddProductModal";
-import { TMembershipRole } from "@formbricks/types/memberships";
-import { getAccessFlags } from "@formbricks/lib/membership/utils";
+import UrlShortenerModal from "./UrlShortenerModal";
 
 interface NavigationProps {
   environment: TEnvironment;
@@ -145,7 +148,7 @@ export default function Navigation({
         hidden: false,
       },
     ],
-    [environment.id, pathname]
+    [environment.id, pathname, isViewer]
   );
 
   const dropdownnavigation = [
@@ -309,7 +312,7 @@ export default function Navigation({
               {/* User Dropdown */}
               <div className="hidden lg:ml-6 lg:flex lg:items-center">
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger asChild id="userDropdownTrigger">
                     <div tabIndex={0} className="flex cursor-pointer flex-row items-center space-x-5">
                       {session.user.imageUrl ? (
                         <Image
@@ -332,7 +335,7 @@ export default function Navigation({
                       <ChevronDownIcon className="h-5 w-5 text-slate-700 hover:text-slate-500" />
                     </div>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
+                  <DropdownMenuContent className="w-56" id="userDropdownContentWrapper">
                     <DropdownMenuLabel className="cursor-default break-all">
                       <span className="ph-no-capture font-normal">Signed in as </span>
                       {session?.user?.name && session?.user?.name.length > 30 ? (
@@ -477,17 +480,27 @@ export default function Navigation({
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       {isFormbricksCloud && (
-                        <DropdownMenuItem>
-                          <button
-                            onClick={() => {
-                              formbricks.track("Top Menu: Product Feedback");
-                            }}>
-                            <div className="flex items-center">
-                              <ChatBubbleBottomCenterTextIcon className="mr-2 h-4 w-4" />
-                              <span>Product Feedback</span>
-                            </div>
-                          </button>
-                        </DropdownMenuItem>
+                        <>
+                          <DropdownMenuItem>
+                            <a href="mailto:johannes@formbricks.com">
+                              <div className="flex items-center">
+                                <EnvelopeIcon className="mr-2 h-4 w-4" />
+                                <span>Email us!</span>
+                              </div>
+                            </a>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <button
+                              onClick={() => {
+                                formbricks.track("Top Menu: Product Feedback");
+                              }}>
+                              <div className="flex items-center">
+                                <ChatBubbleBottomCenterTextIcon className="mr-2 h-4 w-4" />
+                                <span>Product Feedback</span>
+                              </div>
+                            </button>
+                          </DropdownMenuItem>
+                        </>
                       )}
                       <DropdownMenuItem
                         onClick={async () => {

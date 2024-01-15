@@ -1,21 +1,22 @@
 import { UsageAttributesUpdater } from "@/app/(app)/components/FormbricksClient";
 import SurveyDropDownMenu from "@/app/(app)/environments/[environmentId]/surveys/components/SurveyDropDownMenu";
 import SurveyStarter from "@/app/(app)/environments/[environmentId]/surveys/components/SurveyStarter";
-import { SurveyStatusIndicator } from "@formbricks/ui/SurveyStatusIndicator";
+import { generateSurveySingleUseId } from "@/app/lib/singleUseSurveys";
+import { ComputerDesktopIcon, LinkIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
+
+import { authOptions } from "@formbricks/lib/authOptions";
 import { WEBAPP_URL } from "@formbricks/lib/constants";
 import { getEnvironment, getEnvironments } from "@formbricks/lib/environment/service";
-import { getProductByEnvironmentId } from "@formbricks/lib/product/service";
-import { getSurveys } from "@formbricks/lib/survey/service";
-import type { TEnvironment } from "@formbricks/types/environment";
-import { Badge } from "@formbricks/ui/Badge";
-import { ComputerDesktopIcon, LinkIcon, PlusIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
-import { generateSurveySingleUseId } from "@/app/lib/singleUseSurveys";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@formbricks/lib/authOptions";
-import { getTeamByEnvironmentId } from "@formbricks/lib/team/service";
 import { getMembershipByUserIdTeamId } from "@formbricks/lib/membership/service";
 import { getAccessFlags } from "@formbricks/lib/membership/utils";
+import { getProductByEnvironmentId } from "@formbricks/lib/product/service";
+import { getSurveys } from "@formbricks/lib/survey/service";
+import { getTeamByEnvironmentId } from "@formbricks/lib/team/service";
+import type { TEnvironment } from "@formbricks/types/environment";
+import { Badge } from "@formbricks/ui/Badge";
+import { SurveyStatusIndicator } from "@formbricks/ui/SurveyStatusIndicator";
 
 export default async function SurveysList({ environmentId }: { environmentId: string }) {
   const session = await getServerSession(authOptions);
@@ -53,7 +54,7 @@ export default async function SurveysList({ environmentId }: { environmentId: st
         environmentId={environmentId}
         environment={environment}
         product={product}
-        profile={session.user}
+        user={session.user}
       />
     );
   }
@@ -90,8 +91,8 @@ export default async function SurveysList({ environmentId }: { environmentId: st
                         survey.type === "link"
                           ? "Link Survey"
                           : survey.type === "web"
-                          ? "In-Product Survey"
-                          : ""
+                            ? "In-Product Survey"
+                            : ""
                       }
                       type="gray"
                       size={"tiny"}

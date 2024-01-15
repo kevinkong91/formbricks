@@ -1,31 +1,30 @@
-"use client";
+import { signIn } from "next-auth/react";
+import { useCallback, useEffect } from "react";
+import { FaMicrosoft } from "react-icons/fa";
 
 import { Button } from "@formbricks/ui/Button";
-import { signIn } from "next-auth/react";
-import { FaMicrosoft } from "react-icons/fa";
-import { useEffect } from "react";
 
 export const AzureButton = ({
   text = "Continue with Azure",
   inviteUrl,
-  directRedirect,
+  directRedirect = false,
 }: {
   text?: string;
   inviteUrl?: string | null;
-  directRedirect?: boolean | false;
+  directRedirect?: boolean;
 }) => {
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     await signIn("azure-ad", {
       redirect: true,
       callbackUrl: inviteUrl ? inviteUrl : "/",
     });
-  };
+  }, [inviteUrl]);
 
   useEffect(() => {
     if (directRedirect) {
       handleLogin();
     }
-  }, []);
+  }, [directRedirect, handleLogin]);
 
   return (
     <Button

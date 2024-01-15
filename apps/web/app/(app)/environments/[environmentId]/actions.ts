@@ -1,5 +1,9 @@
 "use server";
 
+import { Team } from "@prisma/client";
+import { Prisma as prismaClient } from "@prisma/client/";
+import { getServerSession } from "next-auth";
+
 import { prisma } from "@formbricks/database";
 import { authOptions } from "@formbricks/lib/authOptions";
 import { SHORT_URL_BASE, WEBAPP_URL } from "@formbricks/lib/constants";
@@ -8,12 +12,10 @@ import { createMembership } from "@formbricks/lib/membership/service";
 import { createProduct } from "@formbricks/lib/product/service";
 import { createShortUrl } from "@formbricks/lib/shortUrl/service";
 import { canUserAccessSurvey, verifyUserRoleAccess } from "@formbricks/lib/survey/auth";
+import { surveyCache } from "@formbricks/lib/survey/cache";
 import { deleteSurvey, duplicateSurvey, getSurvey } from "@formbricks/lib/survey/service";
 import { createTeam, getTeamByEnvironmentId } from "@formbricks/lib/team/service";
 import { AuthenticationError, AuthorizationError, ResourceNotFoundError } from "@formbricks/types/errors";
-import { Team } from "@prisma/client";
-import { Prisma as prismaClient } from "@prisma/client/";
-import { getServerSession } from "next-auth";
 
 export const createShortUrlAction = async (url: string) => {
   const session = await getServerSession(authOptions);
@@ -91,7 +93,7 @@ export async function copyToOtherEnvironmentAction(
     include: {
       triggers: {
         include: {
-          eventClass: true,
+          actionClass: true,
         },
       },
       attributeFilters: {
@@ -109,9 +111,9 @@ export async function copyToOtherEnvironmentAction(
   let targetEnvironmentTriggers: string[] = [];
   // map the local triggers to the target environment
   for (const trigger of existingSurvey.triggers) {
-    const targetEnvironmentTrigger = await prisma.eventClass.findFirst({
+    const targetEnvironmentTrigger = await prisma.actionClass.findFirst({
       where: {
-        name: trigger.eventClass.name,
+        name: trigger.actionClass.name,
         environment: {
           id: targetEnvironmentId,
         },
@@ -119,18 +121,18 @@ export async function copyToOtherEnvironmentAction(
     });
     if (!targetEnvironmentTrigger) {
       // if the trigger does not exist in the target environment, create it
-      const newTrigger = await prisma.eventClass.create({
+      const newTrigger = await prisma.actionClass.create({
         data: {
-          name: trigger.eventClass.name,
+          name: trigger.actionClass.name,
           environment: {
             connect: {
               id: targetEnvironmentId,
             },
           },
-          description: trigger.eventClass.description,
-          type: trigger.eventClass.type,
-          noCodeConfig: trigger.eventClass.noCodeConfig
-            ? JSON.parse(JSON.stringify(trigger.eventClass.noCodeConfig))
+          description: trigger.actionClass.description,
+          type: trigger.actionClass.type,
+          noCodeConfig: trigger.actionClass.noCodeConfig
+            ? JSON.parse(JSON.stringify(trigger.actionClass.noCodeConfig))
             : undefined,
         },
       });
@@ -183,8 +185,8 @@ export async function copyToOtherEnvironmentAction(
       questions: JSON.parse(JSON.stringify(existingSurvey.questions)),
       thankYouCard: JSON.parse(JSON.stringify(existingSurvey.thankYouCard)),
       triggers: {
-        create: targetEnvironmentTriggers.map((eventClassId) => ({
-          eventClassId: eventClassId,
+        create: targetEnvironmentTriggers.map((actionClassId) => ({
+          actionClassId: actionClassId,
         })),
       },
       attributeFilters: {
@@ -203,7 +205,13 @@ export async function copyToOtherEnvironmentAction(
       singleUse: existingSurvey.singleUse ?? prismaClient.JsonNull,
       productOverwrites: existingSurvey.productOverwrites ?? prismaClient.JsonNull,
       verifyEmail: existingSurvey.verifyEmail ?? prismaClient.JsonNull,
+      styling: existingSurvey.styling ?? prismaClient.JsonNull,
     },
+  });
+
+  surveyCache.revalidate({
+    id: newSurvey.id,
+    environmentId: targetEnvironmentId,
   });
   return newSurvey;
 }

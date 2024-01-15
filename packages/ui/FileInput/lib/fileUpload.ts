@@ -2,7 +2,7 @@
 
 const uploadFile = async (
   file: File | Blob,
-  allowedFileExtensions: string[],
+  allowedFileExtensions: string[] | undefined,
   environmentId: string | undefined
 ) => {
   try {
@@ -46,7 +46,7 @@ const uploadFile = async (
     const json = await response.json();
 
     const { data } = json;
-    const { signedUrl, fileUrl, signingData, presignedFields } = data;
+    const { signedUrl, fileUrl, signingData, presignedFields, updatedFileName } = data;
 
     let requestHeaders: Record<string, string> = {};
 
@@ -54,12 +54,12 @@ const uploadFile = async (
       const { signature, timestamp, uuid } = signingData;
 
       requestHeaders = {
-        fileType: file.type,
-        fileName: file.name,
-        environmentId: environmentId ?? "",
-        signature,
-        timestamp,
-        uuid,
+        "X-File-Type": file.type,
+        "X-File-Name": encodeURIComponent(updatedFileName),
+        "X-Environment-ID": environmentId ?? "",
+        "X-Signature": signature,
+        "X-Timestamp": String(timestamp),
+        "X-UUID": uuid,
       };
     }
 

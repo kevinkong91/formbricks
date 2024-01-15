@@ -1,12 +1,12 @@
 "use client";
 
-import { Modal } from "@formbricks/ui/Modal";
-
-import { Button } from "@formbricks/ui/Button";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
 import { useRef } from "react";
 import toast from "react-hot-toast";
+
+import { Button } from "@formbricks/ui/Button";
+import { Modal } from "@formbricks/ui/Modal";
 
 interface ShareInviteModalProps {
   inviteToken: string;
@@ -43,7 +43,8 @@ export default function ShareInviteModal({ inviteToken, open, setOpen }: ShareIn
             <p
               ref={linkTextRef}
               className="relative mt-3 w-full truncate rounded-lg border border-slate-300 bg-slate-50 p-3 text-center text-slate-800"
-              onClick={() => handleTextSelection()}>
+              onClick={() => handleTextSelection()}
+              id="inviteLinkText">
               {`${window.location.protocol}//${window.location.host}/invite?token=${inviteToken}`}
             </p>
           </div>

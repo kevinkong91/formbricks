@@ -1,12 +1,15 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+
+import { getMoreResponses } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/actions";
 import EmptyInAppSurveys from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/components/EmptyInAppSurveys";
-import EmptySpaceFiller from "@formbricks/ui/EmptySpaceFiller";
+import React, { useEffect, useRef, useState } from "react";
+
 import { TEnvironment } from "@formbricks/types/environment";
-import { TProfile } from "@formbricks/types/profile";
 import { TResponse } from "@formbricks/types/responses";
 import { TSurvey } from "@formbricks/types/surveys";
 import { TTag } from "@formbricks/types/tags";
+import { TUser } from "@formbricks/types/user";
+import EmptySpaceFiller from "@formbricks/ui/EmptySpaceFiller";
 import SingleResponseCard from "@formbricks/ui/SingleResponseCard";
 
 interface ResponseTimelineProps {
@@ -14,7 +17,7 @@ interface ResponseTimelineProps {
   surveyId: string;
   responses: TResponse[];
   survey: TSurvey;
-  profile: TProfile;
+  user: TUser;
   environmentTags: TTag[];
   responsesPerPage: number;
 }
@@ -23,46 +26,52 @@ export default function ResponseTimeline({
   environment,
   responses,
   survey,
-  profile,
+  user,
   environmentTags,
   responsesPerPage,
 }: ResponseTimelineProps) {
-  const [displayedResponses, setDisplayedResponses] = useState<TResponse[]>([]);
   const loadingRef = useRef(null);
+  const [fetchedResponses, setFetchedResponses] = useState<TResponse[]>(responses);
+  const [page, setPage] = useState(2);
+  const [hasMoreResponses, setHasMoreResponses] = useState<boolean>(responses.length > 0);
 
   useEffect(() => {
-    setDisplayedResponses(responses.slice(0, responsesPerPage));
-  }, [responses]);
+    const currentLoadingRef = loadingRef.current;
 
-  useEffect(() => {
+    const loadResponses = async () => {
+      const newResponses = await getMoreResponses(survey.id, page);
+      if (newResponses.length === 0) {
+        setHasMoreResponses(false);
+      } else {
+        setPage(page + 1);
+      }
+      setFetchedResponses((prevResponses) => [...prevResponses, ...newResponses]);
+    };
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setDisplayedResponses((prevResponses) => [
-            ...prevResponses,
-            ...responses.slice(prevResponses.length, prevResponses.length + responsesPerPage),
-          ]);
+          if (hasMoreResponses) loadResponses();
         }
       },
       { threshold: 0.8 }
     );
 
-    if (loadingRef.current) {
-      observer.observe(loadingRef.current);
+    if (currentLoadingRef) {
+      observer.observe(currentLoadingRef);
     }
 
     return () => {
-      if (loadingRef.current) {
-        observer.unobserve(loadingRef.current);
+      if (currentLoadingRef) {
+        observer.unobserve(currentLoadingRef);
       }
     };
-  }, [responses]);
+  }, [responses, responsesPerPage, page, survey.id, fetchedResponses.length, hasMoreResponses]);
 
   return (
     <div className="space-y-4">
-      {survey.type === "web" && displayedResponses.length === 0 && !environment.widgetSetupCompleted ? (
+      {survey.type === "web" && fetchedResponses.length === 0 && !environment.widgetSetupCompleted ? (
         <EmptyInAppSurveys environment={environment} />
-      ) : displayedResponses.length === 0 ? (
+      ) : fetchedResponses.length === 0 ? (
         <EmptySpaceFiller
           type="response"
           environment={environment}
@@ -70,13 +79,13 @@ export default function ResponseTimeline({
         />
       ) : (
         <div>
-          {displayedResponses.map((response) => {
+          {fetchedResponses.map((response) => {
             return (
               <div key={response.id}>
                 <SingleResponseCard
                   survey={survey}
                   response={response}
-                  profile={profile}
+                  user={user}
                   environmentTags={environmentTags}
                   pageType="response"
                   environment={environment}

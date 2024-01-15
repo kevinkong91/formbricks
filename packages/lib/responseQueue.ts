@@ -1,9 +1,11 @@
 import { FormbricksAPI } from "@formbricks/api";
 import { TResponseUpdate } from "@formbricks/types/responses";
+
 import SurveyState from "./surveyState";
 
 interface QueueConfig {
   apiHost: string;
+  environmentId: string;
   retryAttempts: number;
   onResponseSendingFailed?: (responseUpdate: TResponseUpdate) => void;
   setSurveyState?: (state: SurveyState) => void;
@@ -21,7 +23,7 @@ export class ResponseQueue {
     this.surveyState = surveyState;
     this.api = new FormbricksAPI({
       apiHost: config.apiHost,
-      environmentId: "",
+      environmentId: config.environmentId,
     });
   }
 
@@ -77,7 +79,7 @@ export class ResponseQueue {
         const response = await this.api.client.response.create({
           ...responseUpdate,
           surveyId: this.surveyState.surveyId,
-          personId: this.surveyState.personId || null,
+          userId: this.surveyState.userId || null,
           singleUseId: this.surveyState.singleUseId || null,
         });
         if (!response.ok) {
