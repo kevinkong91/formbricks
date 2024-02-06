@@ -11,6 +11,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
           href: "https://www.appsmith.com",
         },
         {
+          name: "Aptabase",
+          description:
+            "Analytics for Apps, open source, simple and privacy-friendly. SDKs for Swift, React Native, Electron, Flutter and many others.",
+          href: "https://aptabase.com",
+        },
+        {
           name: "Argos",
           description: "Argos provides the developer tools to debug tests and detect visual regressions..",
           href: "https://argos-ci.com",
@@ -26,6 +32,12 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
           description:
             "Cal.com is a scheduling tool that helps you schedule meetings without the back-and-forth emails.",
           href: "https://cal.com",
+        },
+        {
+          name: "ClassroomIO.com",
+          description:
+            "ClassroomIO is a no-code tool that allows you build and scale your own teaching platform with ease.",
+          href: "https://www.classroomio.com",
         },
         {
           name: "Crowd.dev",
@@ -116,8 +128,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
         },
         {
           name: "Lost Pixel",
-          description:
-            "Open source visual regression testing alternative to Percy & Chromatic",
+          description: "Open source visual regression testing alternative to Percy & Chromatic",
           href: "https://lost-pixel.com",
         },
         {
