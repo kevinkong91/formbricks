@@ -4,52 +4,51 @@
 
 :root {
   /* Brand Colors */
-  --formbricks-brand: #038178;
+  --formbricks-brand: #7451eb; /* Updated to a vibrant purple */
 
   /* Fill Colors */
-  --formbricks-fill-primary: #fefefe;
-  --formbricks-fill-secondary: #0f172a;
-  --formbricks-fill-disabled: #e0e0e0;
+  --formbricks-fill-primary: #fafafa; /* Lighter shade for primary fill */
+  --formbricks-fill-secondary: #1e293b; /* Darker blue for secondary fill */
+  --formbricks-fill-disabled: #f0f0f0; /* Slightly lighter grey for disabled fill */
 
   /* Label Colors */
-  --formbricks-label-primary: #0f172a;
-  --formbricks-label-secondary: #384258;
-  --formbricks-label-disabled: #bdbdbd;
+  --formbricks-label-primary: #1e293b; /* Matching darker blue for primary label */
+  --formbricks-label-secondary: #5b677d; /* Softer grey-blue for secondary label */
+  --formbricks-label-disabled: #c2c2c2; /* Lighter grey for disabled label */
 
   /* Border Colors */
-  --formbricks-border-primary: #e0e0e0;
-  --formbricks-border-secondary: #0f172a;
-  --formbricks-border-disabled: #ececec;
+  --formbricks-border-primary: #f0f0f0; /* Light grey for primary border */
+  --formbricks-border-secondary: #1e293b; /* Dark blue for secondary border */
+  --formbricks-border-disabled: #f2f2f2; /* Very light grey for disabled border */
 
   /* Functional Colors */
-  --formbricks-focus: #1982fc;
-  --formbricks-error: #d13a3a;
+  --formbricks-focus: #4a90e2; /* Softer blue for focus */
+  --formbricks-error: #e46767; /* Softer red for error */
 }
 
 .dark {
   /* Brand Colors */
-  --formbricks-brand: #038178; 
+  --formbricks-brand: #7451eb; /* Consistent vibrant purple for dark theme */
 
   /* Fill Colors */
-  --formbricks-fill-primary: #0f172a;
-  --formbricks-fill-secondary: #e0e0e0;
-  --formbricks-fill-disabled: #394258;
+  --formbricks-fill-primary: #1e293b; /* Dark blue for primary fill in dark mode */
+  --formbricks-fill-secondary: #f0f0f0; /* Light grey for secondary fill in dark mode */
+  --formbricks-fill-disabled: #505a6b; /* Dark grey-blue for disabled fill in dark mode */
 
   /* Label Colors */
-  --formbricks-label-primary: #fefefe;
-  --formbricks-label-secondary: #f2f2f2;
-  --formbricks-label-disabled: #bdbdbd;
+  --formbricks-label-primary: #fafafa; /* Very light grey for primary label in dark mode */
+  --formbricks-label-secondary: #eaeaea; /* Soft white for secondary label in dark mode */
+  --formbricks-label-disabled: #c2c2c2; /* Consistent lighter grey for disabled label in dark mode */
 
   /* Border Colors */
-  --formbricks-border-primary: #394258;
-  --formbricks-border-secondary: #e0e0e0;
-  --formbricks-border-disabled: #394258;
+  --formbricks-border-primary: #505a6b; /* Dark grey-blue for primary border in dark mode */
+  --formbricks-border-secondary: #f0f0f0; /* Light grey for secondary border in dark mode */
+  --formbricks-border-disabled: #505a6b; /* Consistent dark grey-blue for disabled border in dark mode */
 
   /* Functional Colors */
-  --formbricks-focus: #1982fc;
-  --formbricks-error: #d13a3a;
+  --formbricks-focus: #4a90e2; /* Consistent softer blue for focus in dark mode */
+  --formbricks-error: #e46767; /* Consistent softer red for error in dark mode */
 }
-
 
 @layer base {
   [data-nextjs-scroll-focus-boundary] {
@@ -60,7 +59,7 @@
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #e2e8f0;
+  scrollbar-color: #dae1e7; /* Lighter shade for scrollbar */
 }
 
 /* Chrome, Edge, and Safari */
@@ -69,12 +68,12 @@
 }
 
 *::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: #dae1e7; /* Updated to match scrollbar color */
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border: 3px solid #cbd5e1;
+  background-color: #c0c9d1; /* Slightly darker shade for the thumb */
+  border: 3px solid #c0c9d1; /* Matching border color for consistency */
 }
 
 input:focus {
@@ -110,21 +109,4 @@ input[type="search"]::-ms-clear {
 
 input[type="search"]::-ms-reveal {
   display: none;
-}
-
-.surveyFilterDropdown[data-state="open"]{
-  background-color: #0f172a;
-  color: white;
-}
-.surveyFilterDropdown:hover * {
-  background-color: #0f172a;
-  color: white;
-}
-
-input[type='range']::-webkit-slider-thumb {
-  background: #0f172a;
-  height: 20px;
-  width: 20px; 
-  border-radius: 50%;
-  -webkit-appearance: none;
 }
